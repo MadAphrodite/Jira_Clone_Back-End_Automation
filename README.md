@@ -16,6 +16,6 @@ The following functionalities are covered by API automation tests:
 * Setting and using global variables
 * Executing API testing using Postman
  
-### Highlights:
+#### Highlights:
 * I generated 72 API requests in my Postman collection.
 * Completed all mandatory and bonus assignments successfully.
