@@ -1,0 +1,4513 @@
+{
+	"info": {
+		"_postman_id": "7ecd4af1-dda7-4a09-a19a-f90ddeaf80bc",
+		"name": "Jira_clone_API",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "37880110"
+	},
+	"item": [
+		{
+			"name": "Authentication",
+			"item": [
+				{
+					"name": "Get authentication token",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const jsonData = pm.response.json();\r",
+									"pm.globals.set(\"token\", jsonData.authToken);\r",
+									"\r",
+									"pm.test(\"Retrieving project information was successful\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/authentication/guest",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"authentication",
+								"guest"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get project id into variable",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const jsonData = pm.response.json();\r",
+									"pm.globals.set(\"project_id\", jsonData.project.id);\r",
+									"pm.globals.set(\"user_id1\", jsonData.project.users[0].id);\r",
+									"pm.globals.set(\"user_id2\", jsonData.project.users[1].id);\r",
+									"pm.globals.set(\"user_id3\", jsonData.project.users[2].id);\r",
+									"\r",
+									"pm.test(\"Retrieving project information was successful\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/project",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"project"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get current user id into variable",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const jsonData = pm.response.json();\r",
+									"pm.globals.set(\"current_user_id\", jsonData.currentUser.id);\r",
+									"\r",
+									"pm.test(\"Retrieving user information was successful\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/currentUser",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"currentUser"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				}
+			]
+		},
+		{
+			"name": "Get issue by id",
+			"item": [
+				{
+					"name": "Get issue (non-existent id)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const jsonData = pm.response.json();\r",
+									"\r",
+									"pm.test(\"Correct error code is returned\", function () {\r",
+									"    pm.response.to.have.status(404);\r",
+									"    pm.expect(jsonData.error.code).to.eql(\"ENTITY_NOT_FOUND\");\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/issues/99999999",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"issues",
+								"99999999"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get issue by ID",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const jsonData = pm.response.json();\r",
+									"\r",
+									"pm.test(\"Get request was successful\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/issues/2710413",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"issues",
+								"2710413"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Get issues (search)",
+			"item": [
+				{
+					"name": "Get all issues",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const jsonData = pm.response.json();\r",
+									"\r",
+									"pm.test(\"Request was succesful\", function () {\r",
+									"    pm.response.to.not.be.error;\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"All issues have correct information\", function () {\r",
+									"    //some issues are found\r",
+									"    pm.expect(jsonData.issues.length).to.be.greaterThan(0);\r",
+									"\r",
+									"    //example, how to check, that issues have correct attributes, when you know only some of them\r",
+									"    pm.expect(jsonData.issues[0]).to.have.any.keys(\"title\", \"priority\");\r",
+									"});\r",
+									"\r",
+									"pm.test(\"All issues belong to the same project\", function () {\r",
+									"    //go through all found issues\r",
+									"    jsonData.issues.forEach(function (issue) {\r",
+									"        //check some condition\r",
+									"        if (issue.projectId !== pm.globals.get(\"project_id\"))\r",
+									"        //do something\r",
+									"            pm.expect.fail(\"Reason why: some issues belong o other projects\");\r",
+									"    });\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/issues",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"issues"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "3.1 - Create new issue (random title)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const jsonData = pm.response.json();\r",
+									"\r",
+									"pm.globals.set(\"issue_id5\", jsonData.issue.id);\r",
+									"pm.globals.set(\"random_title2\", jsonData.issue.title);\r",
+									"pm.globals.set(\"random_description2\", jsonData.issue.description);\r",
+									"\r",
+									"pm.test(\"Issue creation was successful\", function () {\r",
+									"    pm.response.to.not.be.error;\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Check that information was saved correctly\", function () {\r",
+									"    pm.expect(jsonData.issue.title).to.eql(pm.globals.get(\"random_title2\"));\r",
+									"    pm.expect(jsonData.issue.type).to.eql(\"bug\");\r",
+									"    pm.expect(jsonData.issue.description).to.eql(pm.globals.get(\"random_description2\"));\r",
+									"    pm.expect(jsonData.issue.status).to.eql(\"selected\");\r",
+									"    pm.expect(jsonData.issue.priority).to.eql(\"2\");\r",
+									"    pm.expect(jsonData.issue.reporterId).to.eql(pm.globals.get(\"current_user_id\"));\r",
+									"    pm.expect(jsonData.issue.projectId).to.eql(pm.globals.get(\"project_id\"));\r",
+									"\r",
+									"    pm.expect(jsonData.issue.estimate).to.be.null;\r",
+									"    pm.expect(jsonData.issue.timeSpent).to.be.null;\r",
+									"    pm.expect(jsonData.issue.timeRemaining).to.be.null;\r",
+									"    pm.expect(jsonData.issue.createdAt).to.not.be.null;\r",
+									"    pm.expect(jsonData.issue.updatedAt).to.not.be.null;\r",
+									"    pm.expect(jsonData.issue.listPosition).to.not.be.null;\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"type\": \"bug\",\r\n    \"title\": \"{{$randomCatchPhrase}}\",\r\n    \"description\": \"{{$randomPhrase}}\",\r\n    \"reporterId\": {{current_user_id}},\r\n    \"priority\": \"2\",\r\n    \"status\": \"selected\",\r\n    \"projectId\": {{project_id}}\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/issues",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"issues"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "3.2 - Get created issue (search by title)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const jsonData = pm.response.json();\r",
+									"\r",
+									"pm.test(\"Get request was successful\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Correct issue is found\", function () {\r",
+									"    pm.expect(jsonData.issues.length).to.eql(1);\r",
+									"    pm.expect(jsonData.issues[0].title).to.eql(pm.globals.get(\"random_title2\")); \r",
+									"    pm.expect(jsonData.issues[0].id).to.eql(pm.globals.get(\"issue_id5\"));\r",
+									"\r",
+									"    // Verifying correct values\r",
+									"    console.log(\"Search Term from Params: \" + pm.globals.get(\"random_title2\"));\r",
+									"    console.log(\"Response Title: \" + jsonData.issues[0].title);\r",
+									"    console.log(\"Response ID: \" + jsonData.issues[0].id);\r",
+									"\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/issues?searchTerm={{random_title2}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"issues"
+							],
+							"query": [
+								{
+									"key": "searchTerm",
+									"value": "{{random_title2}}"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "3.3 - Get issue (non-existing value)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const jsonData = pm.response.json();\r",
+									"\r",
+									"pm.test(\"Get request was successful\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Verifying that the list of issues is empty\", function () {\r",
+									"    pm.expect(jsonData.issues).to.not.include(\"*VäikeMüü*\");\r",
+									"    pm.expect(jsonData.issues.length).to.eql(0);\r",
+									"\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/issues?searchTerm=*VäikeMüü*",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"issues"
+							],
+							"query": [
+								{
+									"key": "searchTerm",
+									"value": "*VäikeMüü*"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Post issue",
+			"item": [
+				{
+					"name": "Create issue (no auth)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const jsonData = pm.response.json();\r",
+									"\r",
+									"pm.test(\"Correct error code is returned\", function () {\r",
+									"    pm.response.to.be.error;\r",
+									"    pm.response.to.have.status(401);\r",
+									"    pm.expect(jsonData.error.code).to.eql(\"INVALID_TOKEN\");\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjUsImlhdCI6MTY2MTg4ODg2NSwiZXhwIjoxNjc3NDQwODY1fQ.xBCXkyIvbEe6yW1l079gPqZjt0indGDLBvyUG9n_0es"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"type\": \"task\",\r\n    \"title\": \"How is that possible??\",\r\n    \"description\": \"how is that possible????\",\r\n    \"reporterId\": {{current_user_id}},\r\n    \"priority\": \"3\",\r\n    \"status\": \"backlog\",\r\n    \"projectId\": \"{{project_id}}\",\r\n    \"users\": [\r\n        {\r\n            \"id\": \"{{user_id1}}\"\r\n        },\r\n                {\r\n            \"id\": \"{{user_id2}}\"\r\n        }\r\n    ]\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/issues",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"issues"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "[BUG] Create issue (no parameters)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const jsonData = pm.response.json();\r",
+									"\r",
+									"// BUG -the response should show error message for projectId(required field) as well, but doesn't.\r",
+									"\r",
+									"pm.test(\"Correct error code is returned\", function () {\r",
+									"    pm.response.to.be.error;\r",
+									"    pm.response.to.have.status(400);\r",
+									"    pm.expect(jsonData.error.code).to.eql(\"BAD_USER_INPUT\");\r",
+									"});\r",
+									"\r",
+									"pm.test(\"All mandatory fields are listed in fields block\", function () {\r",
+									"    pm.expect(jsonData.error.data.fields).to.have.keys(\"title\", \"type\", \"status\", \"priority\", \"reporterId\", \"projectId\");\r",
+									"    pm.expect(jsonData.error.data.fields.title).to.eql(\"This field is required\");\r",
+									"    pm.expect(jsonData.error.data.fields.type).to.eql(\"This field is required\");\r",
+									"    pm.expect(jsonData.error.data.fields.status).to.eql(\"This field is required\");\r",
+									"    pm.expect(jsonData.error.data.fields.priority).to.eql(\"This field is required\");\r",
+									"    pm.expect(jsonData.error.data.fields.reporterId).to.eql(\"This field is required\");\r",
+									"    pm.expect(jsonData.error.data.fields.projectId).to.eql(\"This field is required\");\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjUsImlhdCI6MTY2MTg4ODg2NSwiZXhwIjoxNjc3NDQwODY1fQ.xBCXkyIvbEe6yW1l079gPqZjt0indGDLBvyUG9n_0es"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/issues",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"issues"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "2.1 - Create issue",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const jsonData = pm.response.json();\r",
+									"\r",
+									"pm.globals.set(\"issue_id\", jsonData.issue.id);\r",
+									"\r",
+									"pm.test(\"Issue creation was successful\", function () {\r",
+									"    pm.response.to.not.be.error;\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Check that information was saved correctly\", function () {\r",
+									"    pm.expect(jsonData.issue.title).to.eql(\"Issue title\");\r",
+									"    pm.expect(jsonData.issue.type).to.eql(\"task\");\r",
+									"    pm.expect(jsonData.issue.description).to.eql(\"Issue description\");\r",
+									"    pm.expect(jsonData.issue.status).to.eql(\"backlog\");\r",
+									"    pm.expect(jsonData.issue.priority).to.eql(\"3\");\r",
+									"    pm.expect(jsonData.issue.reporterId).to.eql(pm.globals.get(\"current_user_id\"));\r",
+									"    pm.expect(jsonData.issue.projectId).to.eql(pm.globals.get(\"project_id\"));\r",
+									"    pm.expect(jsonData.issue.users[0].id).to.eql(pm.globals.get(\"user_id1\"));\r",
+									"    pm.expect(jsonData.issue.estimate).to.be.null;\r",
+									"    pm.expect(jsonData.issue.timeSpent).to.be.null;\r",
+									"    pm.expect(jsonData.issue.timeRemaining).to.be.null;\r",
+									"    pm.expect(jsonData.issue.createdAt).to.not.be.null;\r",
+									"    pm.expect(jsonData.issue.updatedAt).to.not.be.null;\r",
+									"    pm.expect(jsonData.issue.listPosition).to.not.be.null;\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjUsImlhdCI6MTY2MTg4ODg2NSwiZXhwIjoxNjc3NDQwODY1fQ.xBCXkyIvbEe6yW1l079gPqZjt0indGDLBvyUG9n_0es"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"type\": \"task\",\r\n    \"title\": \"Issue title\",\r\n    \"description\": \"Issue description\",\r\n    \"reporterId\": {{current_user_id}},\r\n    \"priority\": \"3\",\r\n    \"status\": \"backlog\",\r\n    \"projectId\": {{project_id}},\r\n    \"users\": [\r\n        {\r\n            \"id\": {{user_id1}}\r\n        }\r\n    ]\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/issues",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"issues"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "2.3 - Create issue (only required fields)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const jsonData = pm.response.json();\r",
+									"\r",
+									"pm.globals.set(\"issue_id1\", jsonData.issue.id);\r",
+									"pm.test(\"Issue creation was successful\", function () {\r",
+									"    pm.response.to.not.be.error;\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Check that provided information is correct\", function () {\r",
+									"    pm.expect(jsonData.issue.type).to.eql(\"task\");\r",
+									"    pm.expect(jsonData.issue.title).to.eql(\"Issue with only required fields filled\");\r",
+									"    pm.expect(jsonData.issue.reporterId).to.eql(pm.globals.get(\"current_user_id\"));\r",
+									"    pm.expect(jsonData.issue.priority).to.eql(\"3\");\r",
+									"    pm.expect(jsonData.issue.status).to.eql(\"backlog\");\r",
+									"    pm.expect(jsonData.issue.projectId).to.eql(pm.globals.get(\"project_id\"));\r",
+									"\r",
+									"    pm.expect(jsonData.issue.estimate).to.be.null;\r",
+									"    pm.expect(jsonData.issue.timeSpent).to.be.null;\r",
+									"    pm.expect(jsonData.issue.timeRemaining).to.be.null;\r",
+									"    pm.expect(jsonData.issue.createdAt).to.not.be.null;\r",
+									"    pm.expect(jsonData.issue.updatedAt).to.not.be.null;\r",
+									"    pm.expect(jsonData.issue.listPosition).to.not.be.null;\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjUsImlhdCI6MTY2MTg4ODg2NSwiZXhwIjoxNjc3NDQwODY1fQ.xBCXkyIvbEe6yW1l079gPqZjt0indGDLBvyUG9n_0es"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"type\": \"task\",\r\n    \"title\": \"Issue with only required fields filled\",\r\n    \"reporterId\": {{current_user_id}},\r\n    \"priority\": \"3\",\r\n    \"status\": \"backlog\",\r\n    \"projectId\": {{project_id}}\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/issues",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"issues"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "3.1 - Create issue (specific parameters)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const jsonData = pm.response.json();\r",
+									"\r",
+									"pm.globals.set(\"issue_id2\", jsonData.issue.id);\r",
+									"pm.test(\"Issue creation was successful\", function () {\r",
+									"    pm.response.to.not.be.error;\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Check that information was saved correctly\", function () {\r",
+									"    pm.expect(jsonData.issue.title).to.eql(\"Issue with specific parameters\");\r",
+									"    pm.expect(jsonData.issue.type).to.eql(\"bug\");\r",
+									"    pm.expect(jsonData.issue.description).to.eql(\"We are testing the specific parameters with this one\");\r",
+									"    pm.expect(jsonData.issue.status).to.eql(\"selected\");\r",
+									"    pm.expect(jsonData.issue.priority).to.eql(\"2\");\r",
+									"    pm.expect(jsonData.issue.reporterId).to.eql(pm.globals.get(\"user_id2\"));\r",
+									"    pm.expect(jsonData.issue.projectId).to.eql(pm.globals.get(\"project_id\"));\r",
+									"\r",
+									"    pm.expect(jsonData.issue.users[0].id).to.eql(pm.globals.get(\"user_id1\"));\r",
+									"\r",
+									"    pm.expect(jsonData.issue.estimate).to.be.null;\r",
+									"    pm.expect(jsonData.issue.timeSpent).to.be.null;\r",
+									"    pm.expect(jsonData.issue.timeRemaining).to.be.null;\r",
+									"    pm.expect(jsonData.issue.createdAt).to.not.be.null;\r",
+									"    pm.expect(jsonData.issue.updatedAt).to.not.be.null;\r",
+									"    pm.expect(jsonData.issue.listPosition).to.not.be.null;\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjUsImlhdCI6MTY2MTg4ODg2NSwiZXhwIjoxNjc3NDQwODY1fQ.xBCXkyIvbEe6yW1l079gPqZjt0indGDLBvyUG9n_0es"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"type\": \"bug\",\r\n    \"title\": \"Issue with specific parameters\",\r\n    \"description\": \"We are testing the specific parameters with this one\",\r\n    \"reporterId\": {{user_id2}},\r\n    \"priority\": \"2\",\r\n    \"status\": \"selected\",\r\n    \"projectId\": {{project_id}},\r\n    \"users\": [\r\n        {\r\n            \"id\": {{user_id1}}\r\n        }\r\n    ]\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/issues",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"issues"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "3.2 - Create issue (dynamic variables)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const jsonData = pm.response.json();\r",
+									"\r",
+									"pm.globals.set(\"issue_id3\", jsonData.issue.id);\r",
+									"pm.globals.set(\"random_title\", jsonData.issue.title);\r",
+									"pm.globals.set(\"random_description\", jsonData.issue.description);\r",
+									"\r",
+									"pm.test(\"Issue creation was successful\", function () {\r",
+									"    pm.response.to.not.be.error;\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Check that information was saved correctly\", function () {\r",
+									"    pm.expect(jsonData.issue.title).to.eql(pm.globals.get(\"random_title\"));\r",
+									"    pm.expect(jsonData.issue.type).to.eql(\"bug\");\r",
+									"    pm.expect(jsonData.issue.description).to.eql(pm.globals.get(\"random_description\"));\r",
+									"    pm.expect(jsonData.issue.status).to.eql(\"done\");\r",
+									"    pm.expect(jsonData.issue.priority).to.eql(\"3\");\r",
+									"    pm.expect(jsonData.issue.reporterId).to.eql(pm.globals.get(\"current_user_id\"));\r",
+									"    pm.expect(jsonData.issue.projectId).to.eql(pm.globals.get(\"project_id\"));\r",
+									"    pm.expect(jsonData.issue.users[0].id).to.eql(pm.globals.get(\"user_id2\"));\r",
+									"    pm.expect(jsonData.issue.estimate).to.be.null;\r",
+									"    pm.expect(jsonData.issue.timeSpent).to.be.null;\r",
+									"    pm.expect(jsonData.issue.timeRemaining).to.be.null;\r",
+									"    pm.expect(jsonData.issue.createdAt).to.not.be.null;\r",
+									"    pm.expect(jsonData.issue.updatedAt).to.not.be.null;\r",
+									"    pm.expect(jsonData.issue.listPosition).to.not.be.null;\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjUsImlhdCI6MTY2MTg4ODg2NSwiZXhwIjoxNjc3NDQwODY1fQ.xBCXkyIvbEe6yW1l079gPqZjt0indGDLBvyUG9n_0es"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"type\": \"bug\",\r\n    \"title\": \"{{$randomAdjective}}\",\r\n    \"description\": \"{{$randomLoremSentence}}\",\r\n    \"reporterId\": {{current_user_id}},\r\n    \"priority\": \"3\",\r\n    \"status\": \"done\",\r\n    \"projectId\": {{project_id}},\r\n    \"users\": [\r\n        {\r\n            \"id\": {{user_id2}}\r\n        }\r\n    ]\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/issues",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"issues"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "2.1 - Create issue (invalid priority)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const jsonData = pm.response.json();\r",
+									"\r",
+									"pm.test(\"Correct error code is returned\", function () {\r",
+									"    pm.response.to.be.error;\r",
+									"    pm.response.to.have.status(400);\r",
+									"    pm.expect(jsonData.error.code).to.eql(\"BAD_USER_INPUT\");\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Correct error message is returned\", function () {\r",
+									"    pm.expect(jsonData.error.data.fields.priority).to.eql(\"Must be one of: 5, 4, 3, 2, 1\");\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjUsImlhdCI6MTY2MTg4ODg2NSwiZXhwIjoxNjc3NDQwODY1fQ.xBCXkyIvbEe6yW1l079gPqZjt0indGDLBvyUG9n_0es"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"type\": \"bug\",\r\n    \"title\": \"Testing invalid priority value\",\r\n    \"description\": \"{{$randomLoremSentence}}\",\r\n    \"reporterId\": {{current_user_id}},\r\n    \"priority\": \"{{$randomColor}}\",\r\n    \"status\": \"selected\",\r\n    \"projectId\": {{project_id}},\r\n    \"users\": [\r\n        {\r\n            \"id\": {{user_id1}}\r\n        }\r\n    ]\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/issues",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"issues"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "2.2 - Create issue (invalid status)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const jsonData = pm.response.json();\r",
+									"\r",
+									"pm.test(\"Correct error code is returned\", function () {\r",
+									"    pm.response.to.be.error;\r",
+									"    pm.response.to.have.status(400);\r",
+									"    pm.expect(jsonData.error.code).to.eql(\"BAD_USER_INPUT\");\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Correct error message is returned\", function () {\r",
+									"    pm.expect(jsonData.error.data.fields.status).to.eql(\"Must be one of: backlog, selected, inprogress, done\");\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjUsImlhdCI6MTY2MTg4ODg2NSwiZXhwIjoxNjc3NDQwODY1fQ.xBCXkyIvbEe6yW1l079gPqZjt0indGDLBvyUG9n_0es"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"type\": \"task\",\r\n    \"title\": \"Testing invalid status\",\r\n    \"description\": \"{{$randomLoremSentence}}\",\r\n    \"reporterId\": {{current_user_id}},\r\n    \"priority\": \"2\",\r\n    \"status\": \"{{$randomColor}}\",\r\n    \"projectId\": {{project_id}},\r\n    \"users\": [\r\n        {\r\n            \"id\": {{user_id1}}\r\n        }\r\n    ]\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/issues",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"issues"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "2.3 - Create issue (invalid type)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const jsonData = pm.response.json();\r",
+									"\r",
+									"pm.test(\"Correct error code is returned\", function () {\r",
+									"    pm.response.to.be.error;\r",
+									"    pm.response.to.have.status(400);\r",
+									"    pm.expect(jsonData.error.code).to.eql(\"BAD_USER_INPUT\");\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Correct error message is returned\", function () {\r",
+									"    pm.expect(jsonData.error.data.fields.type).to.eql(\"Must be one of: task, bug, story\");\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjUsImlhdCI6MTY2MTg4ODg2NSwiZXhwIjoxNjc3NDQwODY1fQ.xBCXkyIvbEe6yW1l079gPqZjt0indGDLBvyUG9n_0es"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"type\": \"{{$randomAdjective}}\",\r\n    \"title\": \"Testing invalid type\",\r\n    \"description\": \"{{$randomLoremSentence}}\",\r\n    \"reporterId\": {{current_user_id}},\r\n    \"priority\": \"3\",\r\n    \"status\": \"backlog\",\r\n    \"projectId\": {{project_id}},\r\n    \"users\": [\r\n        {\r\n            \"id\": {{user_id1}}\r\n        }\r\n    ]\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/issues",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"issues"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "2.4 - Create issue (invalid combined values)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const jsonData = pm.response.json();\r",
+									"\r",
+									"pm.test(\"Correct error code is returned\", function () {\r",
+									"    pm.response.to.be.error;\r",
+									"    pm.response.to.have.status(400);\r",
+									"    pm.expect(jsonData.error.code).to.eql(\"BAD_USER_INPUT\");\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Correct error message is returned\", function () {\r",
+									"    pm.expect(jsonData.error.data.fields).to.have.keys(\"type\",\"status\",\"priority\");\r",
+									"    pm.expect(jsonData.error.data.fields.type).to.eql(\"Must be one of: task, bug, story\");\r",
+									"    pm.expect(jsonData.error.data.fields.status).to.eql(\"Must be one of: backlog, selected, inprogress, done\");\r",
+									"    pm.expect(jsonData.error.data.fields.priority).to.eql(\"Must be one of: 5, 4, 3, 2, 1\");\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjUsImlhdCI6MTY2MTg4ODg2NSwiZXhwIjoxNjc3NDQwODY1fQ.xBCXkyIvbEe6yW1l079gPqZjt0indGDLBvyUG9n_0es"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"type\": \"{{$randomAdjective}}\",\r\n    \"title\": \"Testing the various invalid field values\",\r\n    \"description\": \"{{$randomLoremSentence}}\",\r\n    \"reporterId\": {{current_user_id}},\r\n    \"priority\": \"{{$randomColor}}\",\r\n    \"status\": \"{{$randomCity}}\",\r\n    \"projectId\": {{project_id}},\r\n    \"users\": [\r\n        {\r\n            \"id\": {{user_id1}}\r\n        }\r\n    ]\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/issues",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"issues"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "2.5.1 - Create issue (title length 200)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const jsonData = pm.response.json();\r",
+									"\r",
+									"pm.globals.set(\"issue_id4\", jsonData.issue.id);\r",
+									"pm.globals.set(\"random_description1\", jsonData.issue.description);\r",
+									"\r",
+									"pm.test(\"Issue creation was successful\", function () {\r",
+									"    pm.response.to.not.be.error;\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Check that title has 200 characters\", function (){\r",
+									"    pm.expect(jsonData.issue.title).to.have.length(200);\r",
+									"    pm.expect(jsonData.issue.title).to.eql(\"Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis eu placerat nulla. Quisque sed ligula quis ex consectetur iaculis. Maecenas non lacinia lorem, sed ullamcorper neque. I aTesting 200 char.\");\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjUsImlhdCI6MTY2MTg4ODg2NSwiZXhwIjoxNjc3NDQwODY1fQ.xBCXkyIvbEe6yW1l079gPqZjt0indGDLBvyUG9n_0es"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"type\": \"bug\",\r\n    \"title\": \"Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis eu placerat nulla. Quisque sed ligula quis ex consectetur iaculis. Maecenas non lacinia lorem, sed ullamcorper neque. I aTesting 200 char.\",\r\n    \"description\": \"{{$randomLoremSentence}}\",\r\n    \"reporterId\": {{current_user_id}},\r\n    \"priority\": \"3\",\r\n    \"status\": \"done\",\r\n    \"projectId\": {{project_id}}\r\n    \r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/issues",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"issues"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "2.5.2 - Create issue (title length 201)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const jsonData = pm.response.json();\r",
+									"\r",
+									"pm.test(\"Correct error code is returned\", function () {\r",
+									"    pm.response.to.be.error;\r",
+									"    pm.response.to.have.status(400);\r",
+									"    pm.expect(jsonData.error.code).to.eql(\"BAD_USER_INPUT\");\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Correct error message is returned\",function () {\r",
+									"    pm.expect(jsonData.error.data.fields.title).to.eql(\"Must be at most 200 characters\");\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjUsImlhdCI6MTY2MTg4ODg2NSwiZXhwIjoxNjc3NDQwODY1fQ.xBCXkyIvbEe6yW1l079gPqZjt0indGDLBvyUG9n_0es"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"type\": \"bug\",\r\n    \"title\": \"Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis eu placerat nulla. Quisque sed ligula quis ex consectetur iaculis. Maecenas non lacinia lorem, sed ullamcorper neque. I amTesting 201 char.\",\r\n    \"description\": \"{{$randomLoremSentence}}\",\r\n    \"reporterId\": {{current_user_id}},\r\n    \"priority\": \"3\",\r\n    \"status\": \"done\",\r\n    \"projectId\": {{project_id}}\r\n    \r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/issues",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"issues"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "2.5.3 - [BUG] Create issue (invalid reporterId)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const jsonData = pm.response.json();\r",
+									"\r",
+									"// BUG - shows error 500 response, but should show error 404.\r",
+									"\r",
+									"pm.test(\"Correct error code is returned\", function () {\r",
+									"    pm.response.to.be.error;\r",
+									"    pm.response.to.have.status(404);\r",
+									"    pm.expect(jsonData.error.code).to.eql(\"ENTITY_NOT_FOUND\");\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjUsImlhdCI6MTY2MTg4ODg2NSwiZXhwIjoxNjc3NDQwODY1fQ.xBCXkyIvbEe6yW1l079gPqZjt0indGDLBvyUG9n_0es"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"type\": \"bug\",\r\n    \"title\": \"Testing invalid reporter\",\r\n    \"description\": \"{{$randomLoremSentence}}\",\r\n    \"reporterId\": 00550049,\r\n    \"priority\": \"3\",\r\n    \"status\": \"backlog\",\r\n    \"projectId\": {{project_id}},\r\n    \"users\": [\r\n        {\r\n            \"id\": {{user_id1}}\r\n        }\r\n    ]\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/issues",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"issues"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "2.5.4 - [BUG] Create issue (required field missing - projectId)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const jsonData = pm.response.json();\r",
+									"\r",
+									"// BUG - shows error 500 in response, but should show error 400.\r",
+									"\r",
+									"pm.test(\"Correct error code is returned\", function () {\r",
+									"    pm.response.to.be.error;\r",
+									"    pm.response.to.have.status(400);\r",
+									"    pm.expect(jsonData.error.code).to.eql(\"BAD_USER_INPUT\");\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Correct error message is returned\", function () {\r",
+									"    pm.expect(jsonData.error.data.fields).to.have.keys(\"projectId\");\r",
+									"    pm.expect(jsonData.error.data.fields.projectId).to.eql(\"This field is required\");\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjUsImlhdCI6MTY2MTg4ODg2NSwiZXhwIjoxNjc3NDQwODY1fQ.xBCXkyIvbEe6yW1l079gPqZjt0indGDLBvyUG9n_0es"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"type\": \"bug\",\r\n    \"title\": \"{{$randomAdjective}}\",\r\n    \"description\": \"{{$randomLoremSentence}}\",\r\n    \"reporterId\": {{current_user_id}},\r\n    \"priority\": \"3\",\r\n    \"status\": \"done\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/issues",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"issues"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "2.1 - Get created issue",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const jsonData = pm.response.json();\r",
+									"\r",
+									"console.log(\"We are checking issue \" + pm.globals.get(\"issue_id\"));\r",
+									"\r",
+									"pm.test(\"Get request was successful\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Check that information was retrieved correctly\", function () {\r",
+									"    pm.expect(jsonData.issue.title).to.eql(\"Issue title\");\r",
+									"    pm.expect(jsonData.issue.type).to.eql(\"task\");\r",
+									"    pm.expect(jsonData.issue.description).to.eql(\"Issue description\");\r",
+									"    pm.expect(jsonData.issue.status).to.eql(\"backlog\");\r",
+									"    pm.expect(jsonData.issue.priority).to.eql(\"3\");\r",
+									"    pm.expect(jsonData.issue.reporterId).to.eql(pm.globals.get(\"current_user_id\"));\r",
+									"    pm.expect(jsonData.issue.projectId).to.eql(pm.globals.get(\"project_id\"));\r",
+									"    pm.expect(jsonData.issue.users[0].id).to.eql(pm.globals.get(\"user_id1\"));\r",
+									"\r",
+									"    pm.expect(jsonData.issue.estimate).to.be.null;\r",
+									"    pm.expect(jsonData.issue.timeSpent).to.be.null;\r",
+									"    pm.expect(jsonData.issue.timeRemaining).to.be.null;\r",
+									"    pm.expect(jsonData.issue.createdAt).to.not.be.null;\r",
+									"    pm.expect(jsonData.issue.updatedAt).to.not.be.null;\r",
+									"    pm.expect(jsonData.issue.listPosition).to.not.be.null;\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/issues/{{issue_id}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"issues",
+								"{{issue_id}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "2.3 - Get created issue (only required fields)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const jsonData = pm.response.json();\r",
+									"\r",
+									"console.log(\"We are checking issue \" + pm.globals.get(\"issue_id1\"));\r",
+									"\r",
+									"pm.test(\"Get request was successful\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Check that information was retrieved correctly\", function () {\r",
+									"    pm.expect(jsonData.issue.title).to.eql(\"Issue with only required fields filled\");\r",
+									"    pm.expect(jsonData.issue.type).to.eql(\"task\");\r",
+									"     pm.expect(jsonData.issue.reporterId).to.eql(pm.globals.get(\"current_user_id\"));\r",
+									"    pm.expect(jsonData.issue.priority).to.eql(\"3\");\r",
+									"    pm.expect(jsonData.issue.status).to.eql(\"backlog\");\r",
+									"    pm.expect(jsonData.issue.projectId).to.eql(pm.globals.get(\"project_id\"));\r",
+									"\r",
+									"    pm.expect(jsonData.issue.estimate).to.be.null;\r",
+									"    pm.expect(jsonData.issue.timeSpent).to.be.null;\r",
+									"    pm.expect(jsonData.issue.timeRemaining).to.be.null;\r",
+									"    pm.expect(jsonData.issue.createdAt).to.not.be.null;\r",
+									"    pm.expect(jsonData.issue.updatedAt).to.not.be.null;\r",
+									"    pm.expect(jsonData.issue.listPosition).to.not.be.null;\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/issues/{{issue_id1}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"issues",
+								"{{issue_id1}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "3.1 - Get created issue (specific parameters)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const jsonData = pm.response.json();\r",
+									"\r",
+									"console.log(\"We are checking issue \" + pm.globals.get(\"issue_id2\"));\r",
+									"\r",
+									"pm.test(\"Get request was successful\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Check that information was retrieved correctly\", function () {\r",
+									"    pm.expect(jsonData.issue.title).to.eql(\"Issue with specific parameters\");\r",
+									"    pm.expect(jsonData.issue.type).to.eql(\"bug\");\r",
+									"    pm.expect(jsonData.issue.description).to.eql(\"We are testing the specific parameters with this one\");\r",
+									"    pm.expect(jsonData.issue.status).to.eql(\"selected\");\r",
+									"    pm.expect(jsonData.issue.priority).to.eql(\"2\");\r",
+									"    pm.expect(jsonData.issue.reporterId).to.eql(pm.globals.get(\"user_id2\"));\r",
+									"    pm.expect(jsonData.issue.projectId).to.eql(pm.globals.get(\"project_id\"));\r",
+									"    pm.expect(jsonData.issue.users[0].id).to.eql(pm.globals.get(\"user_id1\"));\r",
+									"\r",
+									"    pm.expect(jsonData.issue.estimate).to.be.null;\r",
+									"    pm.expect(jsonData.issue.timeSpent).to.be.null;\r",
+									"    pm.expect(jsonData.issue.timeRemaining).to.be.null;\r",
+									"    pm.expect(jsonData.issue.createdAt).to.not.be.null;\r",
+									"    pm.expect(jsonData.issue.updatedAt).to.not.be.null;\r",
+									"    pm.expect(jsonData.issue.listPosition).to.not.be.null;\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/issues/{{issue_id2}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"issues",
+								"{{issue_id2}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "3.2 - Get created issue (dynamic variables)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const jsonData = pm.response.json();\r",
+									"\r",
+									"console.log(\"We are checking issue \" + pm.globals.get(\"issue_id3\"));\r",
+									"\r",
+									"pm.test(\"Get request was successful\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Check that information was retrieved correctly\", function () {\r",
+									"    pm.expect(jsonData.issue.title).to.eql(pm.globals.get(\"random_title\"));\r",
+									"    pm.expect(jsonData.issue.type).to.eql(\"bug\");\r",
+									"    pm.expect(jsonData.issue.description).to.eql(pm.globals.get(\"random_description\"));\r",
+									"    pm.expect(jsonData.issue.status).to.eql(\"done\");\r",
+									"    pm.expect(jsonData.issue.priority).to.eql(\"3\");\r",
+									"    pm.expect(jsonData.issue.reporterId).to.eql(pm.globals.get(\"current_user_id\"));\r",
+									"    pm.expect(jsonData.issue.projectId).to.eql(pm.globals.get(\"project_id\"));\r",
+									"    pm.expect(jsonData.issue.users[0].id).to.eql(pm.globals.get(\"user_id2\"));\r",
+									"\r",
+									"    pm.expect(jsonData.issue.estimate).to.be.null;\r",
+									"    pm.expect(jsonData.issue.timeSpent).to.be.null;\r",
+									"    pm.expect(jsonData.issue.timeRemaining).to.be.null;\r",
+									"    pm.expect(jsonData.issue.createdAt).to.not.be.null;\r",
+									"    pm.expect(jsonData.issue.updatedAt).to.not.be.null;\r",
+									"    pm.expect(jsonData.issue.listPosition).to.not.be.null;\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/issues/{{issue_id3}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"issues",
+								"{{issue_id3}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "2.5.1 - Get created issue (title length)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const jsonData = pm.response.json();\r",
+									"\r",
+									"console.log(\"We are checking issue \" + pm.globals.get(\"issue_id4\"));\r",
+									"\r",
+									"pm.test(\"Get request was successful\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Check that information was retrieved correctly\", function () {\r",
+									"    pm.expect(jsonData.issue.title).to.eql(\"Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis eu placerat nulla. Quisque sed ligula quis ex consectetur iaculis. Maecenas non lacinia lorem, sed ullamcorper neque. I aTesting 200 char.\");\r",
+									"    pm.expect(jsonData.issue.title).to.have.length(200);\r",
+									"    pm.expect(jsonData.issue.type).to.eql(\"bug\");\r",
+									"    pm.expect(jsonData.issue.description).to.eql(pm.globals.get(\"random_description1\"));\r",
+									"    pm.expect(jsonData.issue.status).to.eql(\"done\");\r",
+									"    pm.expect(jsonData.issue.priority).to.eql(\"3\");\r",
+									"    pm.expect(jsonData.issue.reporterId).to.eql(pm.globals.get(\"current_user_id\"));\r",
+									"    pm.expect(jsonData.issue.projectId).to.eql(pm.globals.get(\"project_id\"));\r",
+									"\r",
+									"    pm.expect(jsonData.issue.estimate).to.be.null;\r",
+									"    pm.expect(jsonData.issue.timeSpent).to.be.null;\r",
+									"    pm.expect(jsonData.issue.timeRemaining).to.be.null;\r",
+									"    pm.expect(jsonData.issue.createdAt).to.not.be.null;\r",
+									"    pm.expect(jsonData.issue.updatedAt).to.not.be.null;\r",
+									"    pm.expect(jsonData.issue.listPosition).to.not.be.null;\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/issues/{{issue_id4}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"issues",
+								"{{issue_id4}}"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Put issue",
+			"item": [
+				{
+					"name": "Create issue (prerequisite)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const jsonData = pm.response.json();\r",
+									"\r",
+									"pm.globals.set(\"issue_id6\", jsonData.issue.id);\r",
+									"\r",
+									"pm.test(\"Issue creation was successful\", function () {\r",
+									"    pm.response.to.not.be.error;\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Check that information was saved correctly\", function () {\r",
+									"    pm.expect(jsonData.issue.title).to.eql(\"Issue title\");\r",
+									"    pm.expect(jsonData.issue.type).to.eql(\"task\");\r",
+									"    pm.expect(jsonData.issue.description).to.eql(\"Issue description\");\r",
+									"    pm.expect(jsonData.issue.status).to.eql(\"backlog\");\r",
+									"    pm.expect(jsonData.issue.priority).to.eql(\"3\");\r",
+									"    pm.expect(jsonData.issue.reporterId).to.eql(104);\r",
+									"    pm.expect(jsonData.issue.projectId).to.eql(35);\r",
+									"    pm.expect(jsonData.issue.users[0].id).to.eql(104);\r",
+									"    pm.expect(jsonData.issue.estimate).to.be.null;\r",
+									"    pm.expect(jsonData.issue.timeSpent).to.be.null;\r",
+									"    pm.expect(jsonData.issue.timeRemaining).to.be.null;\r",
+									"    pm.expect(jsonData.issue.createdAt).to.not.be.null;\r",
+									"    pm.expect(jsonData.issue.updatedAt).to.not.be.null;\r",
+									"    pm.expect(jsonData.issue.listPosition).to.not.be.null;\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjUsImlhdCI6MTY2MTg4ODg2NSwiZXhwIjoxNjc3NDQwODY1fQ.xBCXkyIvbEe6yW1l079gPqZjt0indGDLBvyUG9n_0es"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"type\": \"task\",\r\n    \"title\": \"Issue title\",\r\n    \"description\": \"Issue description\",\r\n    \"reporterId\": 104,\r\n    \"priority\": \"3\",\r\n    \"status\": \"backlog\",\r\n    \"projectId\": 35,\r\n    \"users\": [\r\n        {\r\n            \"id\": 104\r\n        }\r\n    ]\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/issues",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"issues"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "2.1 - Change issue priority",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const jsonData = pm.response.json();\r",
+									"\r",
+									"console.log(\"We are checking issue \" + pm.globals.get(\"issue_id6\"));\r",
+									"\r",
+									"pm.test(\"Issue was updated successfully\", function () {\r",
+									"    pm.response.to.not.be.error;\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Priority field was updated correctly\", function () {\r",
+									"    pm.expect(jsonData.issue.priority).to.eql(\"2\");\r",
+									"    pm.expect(jsonData.issue.updatedAt).to.not.be.null;\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"priority\": \"2\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/issues/{{issue_id6}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"issues",
+								"{{issue_id6}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "2.2 - Change issue priority (not allowed value)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const jsonData = pm.response.json();\r",
+									"\r",
+									"pm.test(\"Correct error code is returned\", function () {\r",
+									"    pm.response.to.be.error;\r",
+									"    pm.response.to.have.status(400);\r",
+									"    pm.expect(jsonData.error.code).to.eql(\"BAD_USER_INPUT\");\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Correct error message is returned\", function () {\r",
+									"    pm.expect(jsonData.error.data.fields.priority).to.eql(\"Must be one of: 5, 4, 3, 2, 1\");\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"priority\": \"{{$randomCity}}\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/issues/{{issue_id6}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"issues",
+								"{{issue_id6}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "2.3 - Change issue status",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const jsonData = pm.response.json();\r",
+									"\r",
+									"console.log(\"We are checking issue \" + pm.globals.get(\"issue_id6\"));\r",
+									"\r",
+									"pm.test(\"Issue was updated successfully\", function () {\r",
+									"    pm.response.to.not.be.error;\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Status field was updated correctly\", function () {\r",
+									"    pm.expect(jsonData.issue.status).to.eql(\"done\");\r",
+									"    pm.expect(jsonData.issue.updatedAt).to.not.be.null;\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"status\": \"done\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/issues/{{issue_id6}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"issues",
+								"{{issue_id6}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "2.4 - Change issue status (not allowed value)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const jsonData = pm.response.json();\r",
+									"\r",
+									"pm.test(\"Correct error code is returned\", function () {\r",
+									"    pm.response.to.be.error;\r",
+									"    pm.response.to.have.status(400);\r",
+									"    pm.expect(jsonData.error.code).to.eql(\"BAD_USER_INPUT\");\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Correct error message is returned\", function () {\r",
+									"    pm.expect(jsonData.error.data.fields.status).to.eql(\"Must be one of: backlog, selected, inprogress, done\");\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"status\": \"{{$randomColor}}\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/issues/{{issue_id6}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"issues",
+								"{{issue_id6}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "2.5 - Change issue status (non-existent id)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const jsonData = pm.response.json();\r",
+									"\r",
+									"pm.test(\"Correct error code is returned\", function () {\r",
+									"    pm.response.to.have.status(404);\r",
+									"    pm.expect(jsonData.error.code).to.eql(\"ENTITY_NOT_FOUND\");\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"status\": \"selected\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/issues/884444777",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"issues",
+								"884444777"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Change: remove description",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const jsonData = pm.response.json();\r",
+									"\r",
+									"pm.test(\"Issue update was successful\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Check that information was saved correctly\", function () {\r",
+									"    pm.expect(jsonData.issue.description).to.be.null;\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"description\": null\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/issues/{{issue_id6}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"issues",
+								"{{issue_id6}}"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Delete issue",
+			"item": [
+				{
+					"name": "Create new issue (prerequisite)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const jsonData = pm.response.json();\r",
+									"\r",
+									"pm.globals.set(\"issue_id7\", jsonData.issue.id);\r",
+									"\r",
+									"pm.test(\"Issue creation was successful\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjUsImlhdCI6MTY2MTg4ODg2NSwiZXhwIjoxNjc3NDQwODY1fQ.xBCXkyIvbEe6yW1l079gPqZjt0indGDLBvyUG9n_0es"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"type\": \"task\",\r\n    \"title\": \"Issue title\",\r\n    \"description\": \"Issue description\",\r\n    \"reporterId\": 104,\r\n    \"priority\": \"3\",\r\n    \"status\": \"backlog\",\r\n    \"projectId\": 35,\r\n    \"users\": [\r\n        {\r\n            \"id\": 104\r\n        }\r\n    ]\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/issues",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"issues"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete issue",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Issue deletion was successful\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/issues/{{issue_id7}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"issues",
+								"{{issue_id7}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "3.1 - Delete the same issue",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const jsonData = pm.response.json();\r",
+									"\r",
+									"pm.test(\"Correct error code is returned\", function () {\r",
+									"   pm.response.to.have.status(404);\r",
+									"   pm.expect(jsonData.error.code).to.eql(\"ENTITY_NOT_FOUND\");\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/issues/{{issue_id7}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"issues",
+								"{{issue_id7}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "3.2 - Delete issue (non-existent id)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const jsonData = pm.response.json();\r",
+									"\r",
+									"pm.test(\"Correct error code is returned\", function () {\r",
+									"   pm.response.to.have.status(404);\r",
+									"   pm.expect(jsonData.error.code).to.eql(\"ENTITY_NOT_FOUND\");\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/issues/99999999",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"issues",
+								"99999999"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Time tracking: time spent",
+			"item": [
+				{
+					"name": "1.1 - Create issue (prerequisite)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const jsonData = pm.response.json();\r",
+									"\r",
+									"pm.globals.set(\"issue_id8\", jsonData.issue.id);\r",
+									"\r",
+									"pm.test(\"Issue creation was successful\", function () {\r",
+									"    pm.response.to.not.be.error;\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Check that information was saved correctly\", function () {\r",
+									"    pm.expect(jsonData.issue.title).to.eql(\"Test for time tracking\");\r",
+									"    pm.expect(jsonData.issue.type).to.eql(\"task\");\r",
+									"    pm.expect(jsonData.issue.description).to.eql(\"Checking if time tracking and logging is working with this issue\");\r",
+									"    pm.expect(jsonData.issue.status).to.eql(\"backlog\");\r",
+									"    pm.expect(jsonData.issue.priority).to.eql(\"3\");\r",
+									"    pm.expect(jsonData.issue.reporterId).to.eql(pm.globals.get(\"current_user_id\"));\r",
+									"    pm.expect(jsonData.issue.projectId).to.eql(pm.globals.get(\"project_id\"));\r",
+									"    pm.expect(jsonData.issue.users[0].id).to.eql(pm.globals.get(\"user_id1\"));\r",
+									"    pm.expect(jsonData.issue.estimate).to.be.null;\r",
+									"    pm.expect(jsonData.issue.timeSpent).to.be.null;\r",
+									"    pm.expect(jsonData.issue.timeRemaining).to.be.null;\r",
+									"    pm.expect(jsonData.issue.createdAt).to.not.be.null;\r",
+									"    pm.expect(jsonData.issue.updatedAt).to.not.be.null;\r",
+									"    pm.expect(jsonData.issue.listPosition).to.not.be.null;\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjUsImlhdCI6MTY2MTg4ODg2NSwiZXhwIjoxNjc3NDQwODY1fQ.xBCXkyIvbEe6yW1l079gPqZjt0indGDLBvyUG9n_0es"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"type\": \"task\",\r\n    \"title\": \"Test for time tracking\",\r\n    \"description\": \"Checking if time tracking and logging is working with this issue\",\r\n    \"reporterId\": {{current_user_id}},\r\n    \"priority\": \"3\",\r\n    \"status\": \"backlog\",\r\n    \"projectId\": {{project_id}},\r\n    \"users\": [\r\n        {\r\n            \"id\": {{user_id1}}\r\n        }\r\n    ]\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/issues",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"issues"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "1.2 - Log time spent",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const jsonData = pm.response.json();\r",
+									"\r",
+									"console.log(\"We are checking issue \" + pm.globals.get(\"issue_id8\"));\r",
+									"\r",
+									"pm.test(\"Issue was updated successfully\", function () {\r",
+									"    pm.response.to.not.be.error;\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Field timeSpent was updated correctly\", function () {\r",
+									"    pm.expect(jsonData.issue.timeSpent).to.eql(5);\r",
+									"    pm.expect(jsonData.issue.updatedAt).to.not.be.null;\r",
+									"});\r",
+									"\r",
+									"// Verifying correct values\r",
+									"console.log(\"Updated time spent: \" + jsonData.issue.timeSpent);"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"timeSpent\": 5\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/issues/{{issue_id8}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"issues",
+								"{{issue_id8}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "1.3 - Remove logged time",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const jsonData = pm.response.json();\r",
+									"\r",
+									"console.log(\"We are checking issue \" + pm.globals.get(\"issue_id8\"));\r",
+									"\r",
+									"pm.test(\"Issue was updated successfully\", function () {\r",
+									"    pm.response.to.not.be.error;\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Field timeSpent was updated correctly\", function () {\r",
+									"    pm.expect(jsonData.issue.timeSpent).to.be.null;\r",
+									"    pm.expect(jsonData.issue.updatedAt).to.not.be.null;\r",
+									"});\r",
+									"\r",
+									"// Verifying correct values\r",
+									"console.log(\"Updated time spent: \" + jsonData.issue.timeSpent);\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"timeSpent\": null\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/issues/{{issue_id8}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"issues",
+								"{{issue_id8}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "1.4.1 - Add max allowed number of hours (according to API)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const jsonData = pm.response.json();\r",
+									"\r",
+									"console.log(\"We are checking issue \" + pm.globals.get(\"issue_id8\"));\r",
+									"\r",
+									"pm.test(\"Issue was updated successfully\", function () {\r",
+									"    pm.response.to.not.be.error;\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Field timeSpent was updated correctly\", function () {\r",
+									"    pm.expect(jsonData.issue.timeSpent).to.eql(2147483647);\r",
+									"    pm.expect(jsonData.issue.updatedAt).to.not.be.null;\r",
+									"});\r",
+									"\r",
+									"// Verifying correct value\r",
+									"console.log(\"Updated time spent: \" + jsonData.issue.timeSpent);"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"timeSpent\": 2147483647\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/issues/{{issue_id8}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"issues",
+								"{{issue_id8}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "1.4.2 - Add over max allowed number of hours (according to API)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const jsonData = pm.response.json();\r",
+									"\r",
+									"pm.test(\"Correct error code is returned\", function () {\r",
+									"    pm.response.to.be.error;\r",
+									"    pm.response.to.have.status(500);\r",
+									"    pm.expect(jsonData.error.code).to.eql(\"INTERNAL_ERROR\");\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Correct error message is returned\", function () {\r",
+									"    pm.expect(jsonData.error.message).to.eql(\"Something went wrong, please contact our support.\");\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"timeSpent\": 2147483648\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/issues/{{issue_id8}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"issues",
+								"{{issue_id8}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "1.4.3 - Add max allowed number of hours (according to UI)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const jsonData = pm.response.json();\r",
+									"\r",
+									"console.log(\"We are checking issue \" + pm.globals.get(\"issue_id8\"));\r",
+									"\r",
+									"// Testing in UI allows max value entered to the timeSpent field to be 999999\r",
+									"\r",
+									"pm.test(\"Issue was updated successfully\", function () {\r",
+									"    pm.response.to.not.be.error;\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Field timeSpent was updated correctly\", function () {\r",
+									"    pm.expect(jsonData.issue.timeSpent).to.eql(999999);\r",
+									"    pm.expect(jsonData.issue.updatedAt).to.not.be.null;\r",
+									"});\r",
+									"\r",
+									"// Verifying correct value\r",
+									"console.log(\"Updated time spent: \" + jsonData.issue.timeSpent);"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"timeSpent\": 999999\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/issues/{{issue_id8}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"issues",
+								"{{issue_id8}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "1.4.4 - [BUG] Add over max allowed number of hours (according to UI)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const jsonData = pm.response.json();\r",
+									"\r",
+									"// Testing in UI shows max value entered to the timeSpent field is 999999. No more symbols can be added.\r",
+									"// System should show an error when value exceeds max amount\r",
+									"\r",
+									"pm.test(\"Correct error code is returned\", function () {\r",
+									"    pm.response.to.be.error;\r",
+									"    pm.response.to.have.status(500);\r",
+									"    pm.expect(jsonData.error.code).to.eql(\"INTERNAL_ERROR\");\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Correct error message is returned\", function () {\r",
+									"    pm.expect(jsonData.error.message).to.eql(\"Something went wrong, please contact our support.\");\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"timeSpent\": 1000000\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/issues/{{issue_id8}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"issues",
+								"{{issue_id8}}"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Time tracking: estimate",
+			"item": [
+				{
+					"name": "2.1 - Create issue (prerequisite)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const jsonData = pm.response.json();\r",
+									"\r",
+									"pm.globals.set(\"issue_id9\", jsonData.issue.id);\r",
+									"\r",
+									"pm.test(\"Issue creation was successful\", function () {\r",
+									"    pm.response.to.not.be.error;\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Check that information was saved correctly\", function () {\r",
+									"    pm.expect(jsonData.issue.title).to.eql(\"Testing time estimation\");\r",
+									"    pm.expect(jsonData.issue.type).to.eql(\"bug\");\r",
+									"    pm.expect(jsonData.issue.description).to.eql(\"Checking if changing time estimation is working with this issue\");\r",
+									"    pm.expect(jsonData.issue.status).to.eql(\"backlog\");\r",
+									"    pm.expect(jsonData.issue.priority).to.eql(\"2\");\r",
+									"    pm.expect(jsonData.issue.reporterId).to.eql(pm.globals.get(\"current_user_id\"));\r",
+									"    pm.expect(jsonData.issue.projectId).to.eql(pm.globals.get(\"project_id\"));\r",
+									"    pm.expect(jsonData.issue.users[0].id).to.eql(\r",
+									"        pm.globals.get(\"user_id1\"),\r",
+									"        pm.globals.get(\"user_id2\")\r",
+									"        );\r",
+									"    pm.expect(jsonData.issue.estimate).to.be.null;\r",
+									"    pm.expect(jsonData.issue.timeSpent).to.be.null;\r",
+									"    pm.expect(jsonData.issue.timeRemaining).to.be.null;\r",
+									"    pm.expect(jsonData.issue.createdAt).to.not.be.null;\r",
+									"    pm.expect(jsonData.issue.updatedAt).to.not.be.null;\r",
+									"    pm.expect(jsonData.issue.listPosition).to.not.be.null;\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjUsImlhdCI6MTY2MTg4ODg2NSwiZXhwIjoxNjc3NDQwODY1fQ.xBCXkyIvbEe6yW1l079gPqZjt0indGDLBvyUG9n_0es"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"type\": \"bug\",\r\n    \"title\": \"Testing time estimation\",\r\n    \"description\": \"Checking if changing time estimation is working with this issue\",\r\n    \"reporterId\": {{current_user_id}},\r\n    \"priority\": \"2\",\r\n    \"status\": \"backlog\",\r\n    \"projectId\": {{project_id}},\r\n    \"users\": [\r\n        {\r\n            \"id\": {{user_id1}}\r\n        },\r\n        {\r\n            \"id\": {{user_id2}}\r\n        }\r\n    ]\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/issues",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"issues"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "2.2 - Add time estimate",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const jsonData = pm.response.json();\r",
+									"\r",
+									"console.log(\"We are checking issue \" + pm.globals.get(\"issue_id9\"));\r",
+									"\r",
+									"pm.test(\"Issue was updated successfully\", function () {\r",
+									"    pm.response.to.not.be.error;\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Field estimate was updated correctly\", function () {\r",
+									"    pm.expect(jsonData.issue.estimate).to.eql(10);\r",
+									"    pm.expect(jsonData.issue.updatedAt).to.not.be.null;\r",
+									"});\r",
+									"\r",
+									"// Verifying correct value\r",
+									"console.log(\"Updated time estimate: \" + jsonData.issue.estimate);\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"estimate\": 10\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/issues/{{issue_id9}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"issues",
+								"{{issue_id9}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "2.3 - Remove time estimation",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const jsonData = pm.response.json();\r",
+									"\r",
+									"console.log(\"We are checking issue \" + pm.globals.get(\"issue_id9\"));\r",
+									"\r",
+									"pm.test(\"Issue was updated successfully\", function () {\r",
+									"    pm.response.to.not.be.error;\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Field estimate was updated correctly\", function () {\r",
+									"    pm.expect(jsonData.issue.estimate).to.be.null;\r",
+									"    pm.expect(jsonData.issue.updatedAt).to.not.be.null;\r",
+									"});\r",
+									"\r",
+									"// Verifying correct value\r",
+									"console.log(\"Updated time estimate: \" + jsonData.issue.estimate);\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"estimate\": null\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/issues/{{issue_id9}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"issues",
+								"{{issue_id9}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "2.4.1 - Add max allowed number of hours (according to API)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const jsonData = pm.response.json();\r",
+									"\r",
+									"console.log(\"We are checking issue \" + pm.globals.get(\"issue_id9\"));\r",
+									"\r",
+									"pm.test(\"Issue was updated successfully\", function () {\r",
+									"    pm.response.to.not.be.error;\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Field estimate was updated correctly\", function () {\r",
+									"    pm.expect(jsonData.issue.estimate).to.eql(2147483647);\r",
+									"    pm.expect(jsonData.issue.updatedAt).to.not.be.null;\r",
+									"});\r",
+									"\r",
+									"// Verifying correct value\r",
+									"console.log(\"Updated time estimate: \" + jsonData.issue.estimate);"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"estimate\": 2147483647\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/issues/{{issue_id9}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"issues",
+								"{{issue_id9}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "2.4.2 - Add over max allowed number of hours (according to API)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const jsonData = pm.response.json();\r",
+									"\r",
+									"pm.test(\"Correct error code is returned\", function () {\r",
+									"    pm.response.to.be.error;\r",
+									"    pm.response.to.have.status(500);\r",
+									"    pm.expect(jsonData.error.code).to.eql(\"INTERNAL_ERROR\");\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Correct error message is returned\", function () {\r",
+									"    pm.expect(jsonData.error.message).to.eql(\"Something went wrong, please contact our support.\");\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"estimate\": 2147483648\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/issues/{{issue_id9}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"issues",
+								"{{issue_id9}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "2.4.3 - Add max allowed number of hours (according to UI)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const jsonData = pm.response.json();\r",
+									"\r",
+									"console.log(\"We are checking issue \" + pm.globals.get(\"issue_id9\"));\r",
+									"\r",
+									"// Testing in UI allows max value entered to the estimate field to be 999999\r",
+									"\r",
+									"pm.test(\"Issue was updated successfully\", function () {\r",
+									"    pm.response.to.not.be.error;\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Field estimate was updated correctly\", function () {\r",
+									"    pm.expect(jsonData.issue.estimate).to.eql(999999);\r",
+									"    pm.expect(jsonData.issue.updatedAt).to.not.be.null;\r",
+									"});\r",
+									"\r",
+									"// Verifying correct value\r",
+									"console.log(\"Updated time estimate: \" + jsonData.issue.estimate);"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"estimate\": 999999\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/issues/{{issue_id9}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"issues",
+								"{{issue_id9}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "2.4.4 - [BUG] Add over max allowed number of hours (according to UI)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const jsonData = pm.response.json();\r",
+									"\r",
+									"// Testing in UI shows max value entered to the estimate field is 999999. No more symbols can be added.\r",
+									"// System should show an error when value exceeds max amount\r",
+									"\r",
+									"pm.test(\"Correct error code is returned\", function () {\r",
+									"    pm.response.to.be.error;\r",
+									"    pm.response.to.have.status(500);\r",
+									"    pm.expect(jsonData.error.code).to.eql(\"INTERNAL_ERROR\");\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Correct error message is returned\", function () {\r",
+									"    pm.expect(jsonData.error.message).to.eql(\"Something went wrong, please contact our support.\");\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"estimate\": 1000000\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/issues/{{issue_id9}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"issues",
+								"{{issue_id9}}"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Update project",
+			"item": [
+				{
+					"name": "Get project (get initial info)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var jsonData = pm.response.json();\r",
+									"pm.globals.set(\"project_id\", jsonData.project.id);\r",
+									"pm.globals.set(\"user_id1\", jsonData.project.users[0].id);\r",
+									"pm.globals.set(\"user_id2\", jsonData.project.users[1].id);\r",
+									"pm.globals.set(\"user_id3\", jsonData.project.users[2].id);\r",
+									"pm.globals.set(\"totalNumberOfUsers\", jsonData.project.users.length);\r",
+									"pm.globals.set(\"totalNumberOfIssues\", jsonData.project.issues.length);\r",
+									"pm.globals.set(\"createdAt\", jsonData.project.createdAt);\r",
+									"pm.globals.set(\"updatedAt\", jsonData.project.updatedAt);\r",
+									"\r",
+									"pm.test(\"Retrieving project information was successful\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/project",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"project"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update project",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var jsonData = pm.response.json();\r",
+									"pm.globals.set(\"updatedAt\", jsonData.project.updatedAt);\r",
+									"\r",
+									"pm.test(\"Information was correctly saved\", function () {\r",
+									"    pm.expect(jsonData.project.id).to.eql(pm.globals.get(\"project_id\"));\r",
+									"    //createdAt date should not change\r",
+									"    pm.expect(jsonData.project.createdAt).to.eql(pm.globals.get(\"createdAt\"));\r",
+									"    //updatedAt date should be modified\r",
+									"    pm.expect(jsonData.project.updatedAt).eql(pm.globals.get(\"updatedAt\"));\r",
+									"    \r",
+									"    //more validations can be added for asserting name, url, description and category\r",
+									"    \r",
+									"});\r",
+									"\r",
+									"pm.test(\"Updating project information was successful\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"name\": \"singularity 1.3\",\r\n    \"url\": \"https://www.atlassian.com/software/jira_clone\",\r\n    \"category\": \"software\",\r\n    \"description\": \"Plan, track, and manage your agile and software development projects in Jira. Customize your workflow, collaborate, and release great software. Updated!\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/project",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"project"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get project (data is modified)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var jsonData = pm.response.json();\r",
+									"\r",
+									"pm.test(\"Issue creation was successful\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Information was correctly retireved\", function () {\r",
+									"    pm.expect(jsonData.project.id).to.eql(pm.globals.get(\"project_id\"));\r",
+									"    //number of users is the same\r",
+									"    pm.expect(jsonData.project.users.length).to.eql(pm.globals.get(\"totalNumberOfUsers\"));\r",
+									"    //similar validation for number of issues can be added\r",
+									"});\r",
+									"\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/project",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"project"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Post comment",
+			"item": [
+				{
+					"name": "1.1 - Create issue (prerequisite)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const jsonData = pm.response.json();\r",
+									"\r",
+									"pm.globals.set(\"issue_id\", jsonData.issue.id);\r",
+									"\r",
+									"pm.test(\"Issue creation was successful\", function () {\r",
+									"    pm.response.to.not.be.error;\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Check that information was saved correctly\", function () {\r",
+									"    pm.expect(jsonData.issue.title).to.eql(\"T1 For Comments Creation\");\r",
+									"    pm.expect(jsonData.issue.type).to.eql(\"bug\");\r",
+									"    pm.expect(jsonData.issue.description).to.eql(\"Creating issue with comments. Testing the comments.\");\r",
+									"    pm.expect(jsonData.issue.status).to.eql(\"backlog\");\r",
+									"    pm.expect(jsonData.issue.priority).to.eql(\"3\");\r",
+									"    pm.expect(jsonData.issue.reporterId).to.eql(pm.globals.get(\"current_user_id\"));\r",
+									"    pm.expect(jsonData.issue.projectId).to.eql(pm.globals.get(\"project_id\"));\r",
+									"    pm.expect(jsonData.issue.users[0].id).to.eql(pm.globals.get(\"user_id1\"));\r",
+									"    pm.expect(jsonData.issue.estimate).to.be.null;\r",
+									"    pm.expect(jsonData.issue.timeSpent).to.be.null;\r",
+									"    pm.expect(jsonData.issue.timeRemaining).to.be.null;\r",
+									"    pm.expect(jsonData.issue.createdAt).to.not.be.null;\r",
+									"    pm.expect(jsonData.issue.updatedAt).to.not.be.null;\r",
+									"    pm.expect(jsonData.issue.listPosition).to.not.be.null;\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjUsImlhdCI6MTY2MTg4ODg2NSwiZXhwIjoxNjc3NDQwODY1fQ.xBCXkyIvbEe6yW1l079gPqZjt0indGDLBvyUG9n_0es"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"type\": \"bug\",\r\n    \"title\": \"T1 For Comments Creation\",\r\n    \"description\": \"Creating issue with comments. Testing the comments.\",\r\n    \"reporterId\": {{current_user_id}},\r\n    \"priority\": \"3\",\r\n    \"status\": \"backlog\",\r\n    \"projectId\": {{project_id}},\r\n    \"users\": [\r\n        {\r\n            \"id\": {{user_id1}}\r\n        }\r\n    ]\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/issues",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"issues"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "1.2 - Create first comment",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const jsonData = pm.response.json();\r",
+									"\r",
+									"pm.globals.set(\"comment1_id\", jsonData.comment.id);\r",
+									"pm.globals.set(\"comment1_body\", jsonData.comment.body);\r",
+									"\r",
+									"pm.test(\"First comment creation was successful\", function () {\r",
+									"    pm.response.to.not.be.error;\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Check that information was saved correctly\", function () {\r",
+									"    pm.expect(jsonData.comment.issueId).to.eql(pm.globals.get(\"issue_id\"));\r",
+									"    pm.expect(jsonData.comment.userId).to.eql(pm.globals.get(\"user_id1\"));\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjUsImlhdCI6MTY2MTg4ODg2NSwiZXhwIjoxNjc3NDQwODY1fQ.xBCXkyIvbEe6yW1l079gPqZjt0indGDLBvyUG9n_0es"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"body\": \"First comment test 01\",\r\n    \"issueId\": {{issue_id}},\r\n    \"userId\": {{user_id1}}\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/comments",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"comments"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "1.3 - Create second comment",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const jsonData = pm.response.json();\r",
+									"\r",
+									"pm.globals.set(\"comment2_id\", jsonData.comment.id);\r",
+									"pm.globals.set(\"comment2_body\", jsonData.comment.body);\r",
+									"\r",
+									"pm.test(\"Second comment creation was successful\", function () {\r",
+									"    pm.response.to.not.be.error;\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Check that information was saved correctly\", function () {\r",
+									"    pm.expect(jsonData.comment.issueId).to.eql(pm.globals.get(\"issue_id\"));\r",
+									"    pm.expect(jsonData.comment.userId).to.eql(pm.globals.get(\"user_id2\"));\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjUsImlhdCI6MTY2MTg4ODg2NSwiZXhwIjoxNjc3NDQwODY1fQ.xBCXkyIvbEe6yW1l079gPqZjt0indGDLBvyUG9n_0es"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"body\": \"Second comment test 01\",\r\n    \"issueId\": {{issue_id}},\r\n    \"userId\": {{user_id2}}\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/comments",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"comments"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "1.4 - Get issue by ID",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const jsonData = pm.response.json();\r",
+									"\r",
+									"console.log(\"We are checking issue \" + pm.globals.get(\"issue_id\"));\r",
+									"\r",
+									"pm.test(\"Get request was successful\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Check that information was retrieved correctly\", function () {\r",
+									"    pm.expect(jsonData.issue.title).to.eql(\"T1 For Comments Creation\");\r",
+									"    // Asserting both comments are visible\r",
+									"    pm.expect(jsonData.issue.comments[0].id).to.eql(pm.globals.get(\"comment1_id\"));\r",
+									"    pm.expect(jsonData.issue.comments[0].body).to.eql(pm.globals.get(\"comment1_body\"));\r",
+									"    pm.expect(jsonData.issue.comments[1].id).to.eql(pm.globals.get(\"comment2_id\"));\r",
+									"    pm.expect(jsonData.issue.comments[1].body).to.eql(pm.globals.get(\"comment2_body\"));\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/issues/{{issue_id}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"issues",
+								"{{issue_id}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "1.5.1 - [BUG] Create comment (missing userId field)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const jsonData = pm.response.json();\r",
+									"\r",
+									"\r",
+									"// BUG - should show error 400, but shows error 500\r",
+									"pm.test(\"Correct error code is returned\", function () {\r",
+									"    pm.response.to.be.error;\r",
+									"    pm.response.to.have.status(400);\r",
+									"    pm.expect(jsonData.error.code).to.eql(\"BAD_USER_INPUT\");\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Correct error message is returned\", function () {\r",
+									"    pm.expect(jsonData.error.data.fields.userId).to.eql(\"This field is required\");\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjUsImlhdCI6MTY2MTg4ODg2NSwiZXhwIjoxNjc3NDQwODY1fQ.xBCXkyIvbEe6yW1l079gPqZjt0indGDLBvyUG9n_0es"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"body\": \"Another little test with userId missing\",\r\n    \"issueId\": {{issue_id}}\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/comments",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"comments"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "1.5.2 - [BUG] Create comment (missing issueId field)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const jsonData = pm.response.json();\r",
+									"\r",
+									"\r",
+									"// BUG - should show error 400, but shows error 500\r",
+									"pm.test(\"Correct error code is returned\", function () {\r",
+									"    pm.response.to.be.error;\r",
+									"    pm.response.to.have.status(400);\r",
+									"    pm.expect(jsonData.error.code).to.eql(\"BAD_USER_INPUT\");\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Correct error message is returned\", function () {\r",
+									"    pm.expect(jsonData.error.data.fields.issueId).to.eql(\"This field is required\");\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjUsImlhdCI6MTY2MTg4ODg2NSwiZXhwIjoxNjc3NDQwODY1fQ.xBCXkyIvbEe6yW1l079gPqZjt0indGDLBvyUG9n_0es"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"body\": \"Another little test with issueId missing\",\r\n    \"userId\": {{user_id2}}\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/comments",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"comments"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "1.5.3 - Create comment (missing body field)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const jsonData = pm.response.json();\r",
+									"\r",
+									"pm.test(\"Correct error code is returned\", function () {\r",
+									"    pm.response.to.be.error;\r",
+									"    pm.response.to.have.status(400);\r",
+									"    pm.expect(jsonData.error.code).to.eql(\"BAD_USER_INPUT\");\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Correct error message is returned\", function () {\r",
+									"    pm.expect(jsonData.error.data.fields.body).to.eql(\"This field is required\");\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjUsImlhdCI6MTY2MTg4ODg2NSwiZXhwIjoxNjc3NDQwODY1fQ.xBCXkyIvbEe6yW1l079gPqZjt0indGDLBvyUG9n_0es"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"issueId\": {{issue_id}},\r\n    \"userId\": {{user_id2}}\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/comments",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"comments"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "1.5.4 - [BUG] Create comment (missing all required fields)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const jsonData = pm.response.json();\r",
+									"\r",
+									"// BUG - Only body field is marked as required, but userId and issueId should be required as well.\r",
+									"\r",
+									"pm.test(\"Correct error code is returned\", function () {\r",
+									"    pm.response.to.be.error;\r",
+									"    pm.response.to.have.status(400);\r",
+									"    pm.expect(jsonData.error.code).to.eql(\"BAD_USER_INPUT\");\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Correct error message is returned\", function () {\r",
+									"    pm.expect(jsonData.error.data.fields).to.have.keys(\"body\", \"issueId\", \"userId\");\r",
+									"    pm.expect(jsonData.error.data.fields.body).to.eql(\"This field is required\");\r",
+									"    pm.expect(jsonData.error.data.fields.issueId).to.eql(\"This field is required\");\r",
+									"    pm.expect(jsonData.error.data.fields.userId).to.eql(\"This field is required\");\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjUsImlhdCI6MTY2MTg4ODg2NSwiZXhwIjoxNjc3NDQwODY1fQ.xBCXkyIvbEe6yW1l079gPqZjt0indGDLBvyUG9n_0es"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/comments",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"comments"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "1.6 - Create comment (special symbols)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const jsonData = pm.response.json();\r",
+									"\r",
+									"pm.globals.set(\"comment3_id\", jsonData.comment.id);\r",
+									"pm.globals.set(\"comment3_body\", jsonData.comment.body);\r",
+									"\r",
+									"pm.test(\"Special symbols comment creation was successful\", function () {\r",
+									"    pm.response.to.not.be.error;\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Check that information was saved correctly\", function () {\r",
+									"    pm.expect(jsonData.comment.issueId).to.eql(pm.globals.get(\"issue_id\"));\r",
+									"    pm.expect(jsonData.comment.userId).to.eql(pm.globals.get(\"user_id2\"));\r",
+									"});\r",
+									"\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjUsImlhdCI6MTY2MTg4ODg2NSwiZXhwIjoxNjc3NDQwODY1fQ.xBCXkyIvbEe6yW1l079gPqZjt0indGDLBvyUG9n_0es"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"body\": \"Привет*&~`\",\r\n    \"issueId\": {{issue_id}},\r\n    \"userId\": {{user_id2}}\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/comments",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"comments"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "[BUG] Create comment (non-existent issueId)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const jsonData = pm.response.json();\r",
+									"\r",
+									"// BUG - should show error 400 if issue does not exist in the system, but shows error 500 instead.\r",
+									"pm.test(\"Correct error code is returned\", function () {\r",
+									"    pm.response.to.be.error;\r",
+									"    pm.response.to.have.status(400);\r",
+									"    pm.expect(jsonData.error.code).to.eql(\"BAD_USER_INPUT\");\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjUsImlhdCI6MTY2MTg4ODg2NSwiZXhwIjoxNjc3NDQwODY1fQ.xBCXkyIvbEe6yW1l079gPqZjt0indGDLBvyUG9n_0es"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"body\": \"Greetings guys!\",\r\n    \"issueId\": 99999,\r\n    \"userId\": {{user_id2}}\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/comments",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"comments"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Put comment",
+			"item": [
+				{
+					"name": "Create issue (prerequisite)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const jsonData = pm.response.json();\r",
+									"\r",
+									"pm.globals.set(\"update_issue_id\", jsonData.issue.id);\r",
+									"\r",
+									"pm.test(\"Issue creation was successful\", function () {\r",
+									"    pm.response.to.not.be.error;\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Check that information was saved correctly\", function () {\r",
+									"    pm.expect(jsonData.issue.title).to.eql(\"T2 For Comments updating\");\r",
+									"    pm.expect(jsonData.issue.type).to.eql(\"bug\");\r",
+									"    pm.expect(jsonData.issue.description).to.eql(\"Small description example\");\r",
+									"    pm.expect(jsonData.issue.status).to.eql(\"backlog\");\r",
+									"    pm.expect(jsonData.issue.priority).to.eql(\"2\");\r",
+									"    pm.expect(jsonData.issue.reporterId).to.eql(pm.globals.get(\"current_user_id\"));\r",
+									"    pm.expect(jsonData.issue.projectId).to.eql(pm.globals.get(\"project_id\"));\r",
+									"    pm.expect(jsonData.issue.users[0].id).to.eql(pm.globals.get(\"user_id2\"));\r",
+									"    pm.expect(jsonData.issue.estimate).to.be.null;\r",
+									"    pm.expect(jsonData.issue.timeSpent).to.be.null;\r",
+									"    pm.expect(jsonData.issue.timeRemaining).to.be.null;\r",
+									"    pm.expect(jsonData.issue.createdAt).to.not.be.null;\r",
+									"    pm.expect(jsonData.issue.updatedAt).to.not.be.null;\r",
+									"    pm.expect(jsonData.issue.listPosition).to.not.be.null;\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjUsImlhdCI6MTY2MTg4ODg2NSwiZXhwIjoxNjc3NDQwODY1fQ.xBCXkyIvbEe6yW1l079gPqZjt0indGDLBvyUG9n_0es"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"type\": \"bug\",\r\n    \"title\": \"T2 For Comments updating\",\r\n    \"description\": \"Small description example\",\r\n    \"reporterId\": {{current_user_id}},\r\n    \"priority\": \"2\",\r\n    \"status\": \"backlog\",\r\n    \"projectId\": {{project_id}},\r\n    \"users\": [\r\n        {\r\n            \"id\": {{user_id2}}\r\n        }\r\n    ]\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/issues",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"issues"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "2.1.1 - Create comment",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const jsonData = pm.response.json();\r",
+									"\r",
+									"pm.globals.set(\"update_comment_id\", jsonData.comment.id);\r",
+									"pm.globals.set(\"update_comment_body\", jsonData.comment.body);\r",
+									"\r",
+									"pm.test(\"Comment creation was successful\", function () {\r",
+									"    pm.response.to.not.be.error;\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Check that information was saved correctly\", function () {\r",
+									"    pm.expect(jsonData.comment.issueId).to.eql(pm.globals.get(\"update_issue_id\"));\r",
+									"    pm.expect(jsonData.comment.userId).to.eql(pm.globals.get(\"user_id1\"));\r",
+									"    console.log(\"Created comment: \" + pm.globals.get(\"update_comment_body\"));\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjUsImlhdCI6MTY2MTg4ODg2NSwiZXhwIjoxNjc3NDQwODY1fQ.xBCXkyIvbEe6yW1l079gPqZjt0indGDLBvyUG9n_0es"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"body\": \"I created a test comment!\",\r\n    \"issueId\": {{update_issue_id}},\r\n    \"userId\": {{user_id1}}\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/comments",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"comments"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get comment by ID",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const jsonData = pm.response.json();\r",
+									"\r",
+									"console.log(\"We are checking issue \" + pm.globals.get(\"update_issue_id\"));\r",
+									"\r",
+									"pm.test(\"Get request was successful\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Check that information was retrieved correctly\", function () {\r",
+									"    pm.expect(jsonData.issue.title).to.eql(\"T2 For Comments updating\");\r",
+									"    // Asserting comment is visible\r",
+									"    pm.expect(jsonData.issue.comments[0].id).to.eql(pm.globals.get(\"update_comment_id\"));\r",
+									"    pm.expect(jsonData.issue.comments[0].body).to.eql(pm.globals.get(\"update_comment_body\"));\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/issues/{{update_issue_id}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"issues",
+								"{{update_issue_id}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "2.1.2 - Update comment",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const jsonData = pm.response.json();\r",
+									"\r",
+									"console.log(\"We are checking comment \" + pm.globals.get(\"update_comment_id\"));\r",
+									"pm.globals.set(\"update_comment_body\", jsonData.comment.body);\r",
+									"\r",
+									"pm.test(\"Comment was updated successfully\", function () {\r",
+									"    pm.response.to.not.be.error;\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Body field was updated correctly\", function () {\r",
+									"    pm.expect(jsonData.comment.id).to.eql(pm.globals.get(\"update_comment_id\"));\r",
+									"    pm.expect(jsonData.comment.body).to.eql(\"I changed this comment!\");\r",
+									"    console.log(\"Updated comment: \" + pm.globals.get(\"update_comment_body\"));\r",
+									"    \r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"body\": \"I changed this comment!\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/comments/{{update_comment_id}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"comments",
+								"{{update_comment_id}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get updated comment by ID",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const jsonData = pm.response.json();\r",
+									"\r",
+									"console.log(\"We are checking comment \" + pm.globals.get(\"update_issue_id\"));\r",
+									"\r",
+									"pm.test(\"Get request was successful\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Check that information was retrieved correctly\", function () {\r",
+									"    pm.expect(jsonData.issue.comments[0].id).to.eql(pm.globals.get(\"update_comment_id\"));\r",
+									"    pm.expect(jsonData.issue.comments[0].body).to.eql(pm.globals.get(\"update_comment_body\"));\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/issues/{{update_issue_id}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"issues",
+								"{{update_issue_id}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "2.3.1 - Update comment (empty values)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const jsonData = pm.response.json();\r",
+									"\r",
+									"pm.test(\"Correct error code is returned\", function () {\r",
+									"    pm.response.to.be.error;\r",
+									"    pm.response.to.have.status(400);\r",
+									"    pm.expect(jsonData.error.code).to.eql(\"BAD_USER_INPUT\");\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Correct error message is returned\", function () {\r",
+									"    pm.expect(jsonData.error.message).to.eql(\"There were validation errors.\");\r",
+									"    // Verifying required fields\r",
+									"    // Body field is required\r",
+									"    pm.expect(jsonData.error.data.fields.body).to.eql(\"This field is required\");\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"body\": null,\r\n    \"issueId\": null,\r\n    \"userId\": null\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/comments/{{update_comment_id}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"comments",
+								"{{update_comment_id}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "2.3.2 - Update comment (empty issueId)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const jsonData = pm.response.json();\r",
+									"\r",
+									"// Issue ID cannot be empty\r",
+									"pm.test(\"Correct error code is returned\", function () {\r",
+									"    pm.response.to.be.error;\r",
+									"    pm.response.to.have.status(500);\r",
+									"    pm.expect(jsonData.error.code).to.eql(\"INTERNAL_ERROR\");\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"issueId\": null\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/comments/{{update_comment_id}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"comments",
+								"{{update_comment_id}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "2.3.3 - Update comment (empty userId)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const jsonData = pm.response.json();\r",
+									"\r",
+									"// User ID cannot be empty\r",
+									"pm.test(\"Correct error code is returned\", function () {\r",
+									"    pm.response.to.be.error;\r",
+									"    pm.response.to.have.status(500);\r",
+									"    pm.expect(jsonData.error.code).to.eql(\"INTERNAL_ERROR\");\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"userId\": null\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/comments/{{update_comment_id}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"comments",
+								"{{update_comment_id}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "2.3.4 - [BUG] Update comment (non-existent userId)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const jsonData = pm.response.json();\r",
+									"\r",
+									"// BUG - if userId does not exist in the system, then it should show error 400. But it shows error 500.\r",
+									"pm.test(\"Correct error code is returned\", function () {\r",
+									"    pm.response.to.be.error;\r",
+									"    pm.response.to.have.status(400);\r",
+									"    pm.expect(jsonData.error.code).to.eql(\"BAD_USER_INPUT\");\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"userId\": 0383\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/comments/{{update_comment_id}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"comments",
+								"{{update_comment_id}}"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Delete comment",
+			"item": [
+				{
+					"name": "Create issue (prerequisite)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const jsonData = pm.response.json();\r",
+									"\r",
+									"pm.globals.set(\"delete_issue_id\", jsonData.issue.id);\r",
+									"\r",
+									"pm.test(\"Issue creation was successful\", function () {\r",
+									"    pm.response.to.not.be.error;\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Check that information was saved correctly\", function () {\r",
+									"    pm.expect(jsonData.issue.title).to.eql(\"T3 For Comments deleting\");\r",
+									"    pm.expect(jsonData.issue.type).to.eql(\"task\");\r",
+									"    pm.expect(jsonData.issue.description).to.eql(\"A nice description example\");\r",
+									"    pm.expect(jsonData.issue.status).to.eql(\"backlog\");\r",
+									"    pm.expect(jsonData.issue.priority).to.eql(\"2\");\r",
+									"    pm.expect(jsonData.issue.reporterId).to.eql(pm.globals.get(\"current_user_id\"));\r",
+									"    pm.expect(jsonData.issue.projectId).to.eql(pm.globals.get(\"project_id\"));\r",
+									"    pm.expect(jsonData.issue.users[0].id).to.eql(pm.globals.get(\"user_id2\"));\r",
+									"    pm.expect(jsonData.issue.estimate).to.be.null;\r",
+									"    pm.expect(jsonData.issue.timeSpent).to.be.null;\r",
+									"    pm.expect(jsonData.issue.timeRemaining).to.be.null;\r",
+									"    pm.expect(jsonData.issue.createdAt).to.not.be.null;\r",
+									"    pm.expect(jsonData.issue.updatedAt).to.not.be.null;\r",
+									"    pm.expect(jsonData.issue.listPosition).to.not.be.null;\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjUsImlhdCI6MTY2MTg4ODg2NSwiZXhwIjoxNjc3NDQwODY1fQ.xBCXkyIvbEe6yW1l079gPqZjt0indGDLBvyUG9n_0es"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"type\": \"task\",\r\n    \"title\": \"T3 For Comments deleting\",\r\n    \"description\": \"A nice description example\",\r\n    \"reporterId\": {{current_user_id}},\r\n    \"priority\": \"2\",\r\n    \"status\": \"backlog\",\r\n    \"projectId\": {{project_id}},\r\n    \"users\": [\r\n        {\r\n            \"id\": {{user_id2}}\r\n        }\r\n    ]\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/issues",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"issues"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create comment",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const jsonData = pm.response.json();\r",
+									"\r",
+									"pm.globals.set(\"delete_comment_id\", jsonData.comment.id);\r",
+									"pm.globals.set(\"delete_comment_body\", jsonData.comment.body);\r",
+									"\r",
+									"pm.test(\"Comment creation was successful\", function () {\r",
+									"    pm.response.to.not.be.error;\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Check that information was saved correctly\", function () {\r",
+									"    pm.expect(jsonData.comment.issueId).to.eql(pm.globals.get(\"delete_issue_id\"));\r",
+									"    pm.expect(jsonData.comment.userId).to.eql(pm.globals.get(\"user_id2\"));\r",
+									"    console.log(\"Created comment: \" + pm.globals.get(\"delete_comment_body\"));\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjUsImlhdCI6MTY2MTg4ODg2NSwiZXhwIjoxNjc3NDQwODY1fQ.xBCXkyIvbEe6yW1l079gPqZjt0indGDLBvyUG9n_0es"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"body\": \"Created a test for deletion process!\",\r\n    \"issueId\": {{delete_issue_id}},\r\n    \"userId\": {{user_id2}}\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/comments",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"comments"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "2.2.1 - Delete comment",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Comment deletion was successful\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/comments/{{delete_comment_id}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"comments",
+								"{{delete_comment_id}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "2.2.2 - Update deleted comment",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const jsonData = pm.response.json();\r",
+									"\r",
+									"pm.test(\"Correct error code is returned\", function () {\r",
+									"   pm.response.to.be.error;\r",
+									"   pm.response.to.have.status(404);\r",
+									"   pm.expect(jsonData.error.code).to.eql(\"ENTITY_NOT_FOUND\");\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Correct error message is returned\", function () {\r",
+									"   pm.expect(jsonData.error.message).to.eql(\"Comment not found.\");\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"body\": \"Trying to update already deleted comment.\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/comments/{{delete_comment_id}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"comments",
+								"{{delete_comment_id}}"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	],
+	"auth": {
+		"type": "bearer",
+		"bearer": [
+			{
+				"key": "token",
+				"value": "{{token}}",
+				"type": "string"
+			}
+		]
+	},
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "base_url",
+			"value": "https://jira-api.ivorreic.com",
+			"type": "string"
+		},
+		{
+			"key": "token",
+			"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjk4NjkyNCwiaWF0IjoxNzMzMDg4NTY5LCJleHAiOjE3NDg2NDA1Njl9.4DDO93JJ7TUuIYqVzLQaNtqBhWqJLTWx9FuK4PTGEuQ",
+			"type": "string"
+		}
+	]
+}
